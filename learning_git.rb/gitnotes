@@ -1,0 +1,24 @@
+
+
+Internals of GIT
+Porclain commands
+- add
+- commit
+- push
+- pull
+Learn the model behind git not the commands
+
+Git is:
+layered
+a revision control system 
+a content tracker 
+a map           maps keys to values 
+it is a table with keys and values 
+values are sequences of bytes
+"apple pie"
+
+
+
+
+
+

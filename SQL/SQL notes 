@@ -1,0 +1,339 @@
+
+
+Databases
+PostgreSQL                      Also known as Structed Query Language 
+
+    plays nice with rails
+    plays nice with heroku/ netlify
+pgAdmin  is what we're using 
+
+Rails + PostgreSQL
+
+Data types in PostgreSQL
+    INT  integers
+    FLOAT 
+    VARCHAR(n) limited character string
+    TEXT
+    BOOLEAN
+    DATE not a timestamp, automated yyyy-mm-dd
+
+Database
+    - collection of tables
+    Row
+    - actual data stored per item 
+    - e.g. record
+
+    Column
+    - the values stored in a row 
+    - 
+    Table
+    - one specific area of the Database
+    - might be shoes
+    - containter stored inside the database server
+    - can have many rows
+
+Database commands
+
+SELECT
+UPDATE
+DELETE
+INSERT INTO 
+CREATE DATABASE 
+ALTER DATABASE
+CREATE TAB;eDROP TableCREATE INDEX
+DROP INDEX
+
+Database Constraints
+NOT NULL
+UNIQUE 
+PRIMARY KEY
+FOREIGN KEY
+CHECK 
+DEFAULT 
+INDEX
+
+INNER JOIN 
+OUTER JOIN
+
+
+
+
+
+
+To select query for specific columns 
+SELECT * FROM database
+
+How to select one item
+SELECT x FROM database
+
+How to select two
+SELECT x, y FROM database
+
+How to select a specific row
+SELECT id, title FROM movies
+WHERE id= 6;
+
+How to select a specific time 
+SELECT year FROM database
+WHERE year BETWEEN 2000 and 2010
+
+SELECT title, year FROM movies
+WHERE year <= 2003;
+
+For queries with restraints
+
+=            col_name= 'abc'
+!=           col_name!= 'abc'
+LIKE         col_name LIKE 'ABC'
+NOT LIKE     col_name NOT LIKE 'ABC'
+%            col_name LIKE '%T%'
+_            col_name LIKE 'AN_'
+IN           col_name IN ('A','B')
+NOT IN       col_name NOT IN ('A','B')
+
+To select items with similarities
+SELECT title, director FROM movies
+WHERE title LIKE "Toy Story%';
+
+Filtering and sorting Query results
+Use the DISTINCT keyword
+Also, use the ORDER BY method desc/asc
+LIMIT and OFFSET are 
+
+To list alphabetically without duplicates
+SELECT DISTINCT director FROM movies
+ORDER BY director ASC;
+
+To select a specific section, then ORDER
+SELECT title, year FROM movies
+ORDER BY year DESC 
+LIMIT 4
+
+To find the first/last in a data set 
+SELECT title FROM movies
+ORDER BY title ASC
+LIMIT 5 OFFSET 5;
+
+SELECT city, population FROM north_american_cities
+WHERE country = "Cananda";
+
+SELECT city, latitude FROM north_american_cities
+WHERE country = 'United States'
+ORDER BY latitude DESC;
+
+SELECT city, longitude FROM north_american_cities
+WHERE longitude < -87.629798
+ORDER BY longitude ASC;
+
+SELECT city, population FROM north_american_cities
+WHERE country LIKE 'Mexico'
+ORDER BY population DESC
+LIMIT 2;
+
+Findidng a specific set in the middle
+
+SELECT city, population FROM north_american_cities
+WHERE country LIKE 'United States'
+ORDER BY population DESC
+LIMIT 2 OFFSET 2;
+
+Multi-table queries with JOINS
+Databse normalization is useful because it minimizes duplicate data in any single table and allows for data to grow 
+independently of each other 
+
+Inner Join is a process that matches rows from the first table and the second table  to create a new column 
+ INNER JOIN == JOIN
+
+
+Find the domestic and international sales for each movie 
+
+SELECT title, domestic_sales, international_sales FROM movies
+JOIN boxoffice
+ON movies.id = boxoffice.movie_id;
+
+Show the sales numbers for each movie that did better internatinally rather than domestically
+
+SELECT title, domestic_sales, international_sales
+FROM movies
+    JOIN boxoffice
+    ON movies.id =boxoffice.movie_id
+WHERE international_sales > domestic_sales;
+
+List all movies by their ratings in descending ORDER
+
+SELECT title, rating
+FROM movies
+    JOIN boxoffice
+    ON movies.id =boxoffice.movie_id
+ORDER BY rating DESC;
+
+OUTER JOIN
+
+Find the list of all buildings that have employees
+SELECT DISTINCT building FROM employees;
+
+Find the list of all buiildings and their capacity
+SELECT * FROM buildings;
+
+List all buildiings and the distinct employee roles in each building
+SELECT DISTINCT builiding_name, role
+FROM buildings
+LEFT JOIN employees
+ON building_name = building;
+
+A short note on NULLS
+
+Find the name and role of employees who have not been assigned to a building 
+
+SELECT name, role FROM employees
+WHERE build IS NULL;
+
+Find the name of the builidings that hold no employees
+
+SELECT DISTINCT building_name
+FROM builidings 
+LEFT JOIN eomployees
+ON building_name = builiding 
+WHERE role IS NULL;
+
+Queries with Expressions 
+
+List all movies and their combined sales in millions of dollars
+SELECT title, (domestic_sales + international_sales) /100000 AS
+    gross_sales_millions
+FROM movies
+    JOIN boxoffice
+    ON movies.id =boxoffice.movie_id;
+
+List all movies and their ratings in percent
+ SELECT title, rating * 10 AS rating_percent
+ FROM movies
+ JOIN  boxoffice
+ ON movies.id = boxoffice.movie_id;
+
+List all movies that new released on even number years
+SELECT title, year
+FROM movies
+WHERE year % 2= 0;
+
+Queries with aggregates
+ 
+COUNT(*) or COUNT(column)       counts the number of rows in the group
+MIN(column)                     finds the smallest value
+MAX(column)                     finds the largest numerical
+AVG(column)                     the averga numerical
+SUM(column)                     the sum of all the values
+
+Find the longest time that an employee has been at the studio
+SELECT MAX (years_employed) as Max_years_employed 
+FROM employees;
+
+For each role, find the average number of yeats employed by employees in that role
+SELECT role, AVG(years_employed) as Averag_years_employed
+FROM employees 
+GROUP BY role;
+
+Find the total number of employee years works in each building 
+SELECT building, SUM (year_employed) as Total_years_employed
+FROM employees 
+GROUP BY building;
+
+Find the number of Artists in the studio
+SELECT role, COUNT(*) as Number_of_artists
+FROM employees
+WHERE role = 'Artists';
+
+Find the number of employees of each role in the studio
+SELECT role, COUNT(*)
+FROM employees
+GROUP BY role;
+
+Find the total numbers of years employed by all Engineers
+SELECT role, SUM(years_employed)
+FROM employees
+GROUP BY role
+HAVING role = "Engineer";
+
+
+Query order of execution
+1. FROM and JOINS
+    are first executed to determine thetotal working set of data that is being queried
+2. WHERE
+3. GROUP BY
+4. HAVING
+5.SELECT
+6. DISTINCT
+7. ORDER BY 
+8. LIMIT/OFFSET
+
+Find the number of movies each diretor has directed
+SELECT director, COUNT(id) as Num_movies_directed
+FROM movies
+GROUP BY director;
+
+Find the total domestic and international sales that can be attributed to each director
+SELECT director, SUM(domestic_sales +international_sales) as
+    Cumulative_sales_from_all_movies
+FROM movies
+    INNER JOIN boxoffice
+    ON movies.id = boxoffice.movie_id
+GROUP BY director;
+
+
+What is a schema?
+ The structure of each table 
+
+Add the studios new production
+
+INSERT INTO boxoffice VALUES (4,8.7,340000000,27000000)
+
+Updating rows
+Update the director
+UPDATE movies
+SET director TO "John Lasseter"
+WHERE id= '2'
+
+Update the year 
+UPDATE movies
+SET year TO 1999
+WHERE id =3
+
+UPDATE movies
+SET title TO 'Toy Story 3' AND SET director TO "Lee Unkrich'
+WHERE id = 11;
+
+Delete Databases 
+
+remove all movies that were released before 2005
+DELETE FROM movies
+where year < 2005;
+
+Remove all movies directed by Andrew Stanton
+DELETE FROM movies
+where director = "Andrew Stanton";
+
+Creating tables
+
+CREATE TABLE Database (
+    Name TEXT,
+    Version FLOAT,
+    Download_count INTEGER
+);
+
+Add a column named Aspect_ratio with a FLOAT data type to store the aspect-ratio each movie was released in.
+ALTER TABLE Movies
+  ADD COLUMN Aspect_ratio FLOAT DEFAULT 2.39;
+
+Add a column named language with a text data type
+ALTER TABLE Movies
+  ADD COLUMN Language TEXT DEFAULT "English";
+
+Dropping tablets
+remove movies
+DROP TABLE movies;
+
+DROP TABLE BoxOffice
+
+
+
+
